@@ -3,7 +3,13 @@ import express from 'express';
 const app = express();
 const port = 3000;
 
-const APIS=['https://hexadev.onrender.com'];
+const APIS=[
+  'https://hexadev.onrender.com',
+  'https://chessonline-4u17.onrender.com',
+  'https://chat-connect-gasb.onrender.com',
+  'https://warehousemanagementsystem-66wf.onrender.com',
+  'https://portfoliobackend-ukd5.onrender.com'
+];
 
 const apiCaller = async (apiUrl: string) => {
   try {
