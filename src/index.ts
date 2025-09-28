@@ -1,7 +1,7 @@
 import express from 'express';
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const APIS=[
   'https://hexadev.onrender.com',
@@ -11,13 +11,20 @@ const APIS=[
   'https://portfoliobackend-ukd5.onrender.com'
 ];
 
+// Add your own Render URL here
+const SELF_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${port}`;
+
 const apiCaller = async (apiUrl: string) => {
   try {
     const response = await fetch(apiUrl);
     if (!response.ok) {
+      console.log(`API ${apiUrl} returned status: ${response.status}`);
       return;
     }
-    const data = await response.json();
+    // Don't try to parse JSON for self-ping (returns HTML)
+    if (!apiUrl.includes(SELF_URL)) {
+      const data = await response.json();
+    }
     return;
   } catch (error) {
     console.log(`Error calling ${apiUrl}:`, error);
@@ -28,10 +35,15 @@ const apiCaller = async (apiUrl: string) => {
 // Start the interval immediately when server starts
 const startKeepAlive = () => {
   setInterval(() => {
+    // Call external APIs
     APIS.forEach(apiUrl => {
       console.log("API invoked: ", apiUrl);
       apiCaller(apiUrl);
     });
+    
+    // Call yourself to prevent sleep
+    console.log("Self-ping: ", SELF_URL);
+    apiCaller(SELF_URL);
   }, 14 * 60 * 1000); // 14 minutes
   
   // Call once immediately
